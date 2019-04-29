@@ -1,0 +1,51 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Georgia;
+}
+
+p {
+    text-align: center;
+}
+
+h4 {
+    text-align: center;
+}
+
+#wrapper {
+    width: 100%;
+    align-content: center, center;
+    text-align: center;
+}
+
+.buttons {
+    align-content: center, center;
+    text-align: center;
+}
+
+.myButton {
+    background-color: #dd8282;
+    -moz-border-radius: 18px;
+    -webkit-border-radius: 18px;
+    border-radius: 18px;
+    /*	border:1px solid #ee1eb5;*/
+    display: inline-block;
+    cursor: pointer;
+    color: #ffffff;
+    font-family: Georgia;
+    font-size: 10px;
+    padding: 10px 14px;
+    text-decoration: none;
+    /*	text-shadow:0px 1px 0px #c70067;*/
+    margin-left: 30px;
+}
+
+.myButton:hover {
+    background-color: #ef027d;
+}
+
+.myButton:active {
+    position: relative;
+    top: 1px;
+}
