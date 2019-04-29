@@ -68,4 +68,11 @@ class Clocky {
         textSize(30);
         text(this.city, this.x, this.y + this.radius + 50);
     }
+
+    drawIt() {
+      this.makeIt();
+      this.makeHands();
+      this.makeDots();
+      this.place();
+    }
 }

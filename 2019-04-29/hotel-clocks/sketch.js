@@ -1,24 +1,25 @@
 //var innerColor,externColor;
 //let clocky1, clocky2;
 let clocky = [];
-var showTwoClocks = 1;
+var showTwoClocks = false;
 
 // if i want to change the color of the button once it is pressed... Should I do that with css?
 
 var yes = document.getElementById("yes").addEventListener("click", function() {
-    showTwoClocks = 1;
+    showTwoClocks = true;
     console.log(showTwoClocks);
 });
 var no = document.getElementById("no").addEventListener("click", function() {
-    showTwoClocks = 0;
+    showTwoClocks = false;
     console.log(showTwoClocks);
 });
 
-
 function setup() {
     var canvas = createCanvas(windowWidth, 500);
-    h4=createElement("h4","Click the Mouse");
+
+    let h4=createElement("h4","Click the Mouse");
     h4.position(30, 50);
+
     clocky[0] = new Clocky(windowWidth / 4, 0, "Berlin", color(200, 30, 4));
     clocky[1] = new Clocky(windowWidth / 4 * 3, -5, "Buenos Aires", color(100, 200, 50));
     canvas.parent('sketch-holder');
@@ -87,17 +88,9 @@ function draw() {
     ellipse(windowWidth / 2, 250, 70);
     //This is way I've draw a red circle.
 
-    if (showTwoClocks === 1) {
-        for (let i = 0; i < clocky.length; i++) {
-            clocky[i].makeIt();
-            clocky[i].makeHands();
-            clocky[i].makeDots();
-            clocky[i].place();
-        }
-    } else {
-        clocky[0].makeIt();
-        clocky[0].makeHands();
-        clocky[0].makeDots();
-        clocky[0].place();
+    let countClocks = showTwoClocks ? 2 : 1;
+
+    for (let i = 0; i < countClocks; i++) {
+        clocky[i].drawIt()
     }
 }
