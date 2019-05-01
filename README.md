@@ -12,6 +12,7 @@ Tuesday coworking, coding workshop results
 ## 2019/04/29
 
 - [hotel clocks](https://thought2.github.io/tuesday-coding/2019-04-29/hotel-clocks/index.html)
+- [lorem picsum](https://thought2.github.io/tuesday-coding/2019-04-29/lorem-picsum/index.html)
 
 # Links
 
