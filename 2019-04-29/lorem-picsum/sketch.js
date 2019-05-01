@@ -14,10 +14,13 @@ new p5(function(p) {
       config.countImgs
     }`;
     p.httpGet(url, result => {
-      const items = JSON.parse(result);
+      const items = p.shuffle(JSON.parse(result));
 
       items.forEach((item, i) => {
-        imgs[i].imgData = p.loadImage(item.download_url);
+        const width = 20;
+        const height = 20;
+        const imgUrl = `https://picsum.photos/id/${item.id}/${width}/${height}`;
+        imgs[i].imgData = p.loadImage(imgUrl);
       });
     });
   };
@@ -30,13 +33,7 @@ new p5(function(p) {
     //p.background(200);
     imgs.forEach(img => {
       if (!img.imgData) return;
-      p.image(
-        img.imgData,
-        img.position.x * p.width,
-        img.position.y * p.height,
-        20,
-        20
-      );
+      p.image(img.imgData, img.position.x * p.width, img.position.y * p.height);
     });
   };
 });
