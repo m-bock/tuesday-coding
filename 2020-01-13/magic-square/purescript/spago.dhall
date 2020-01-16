@@ -6,6 +6,7 @@ You can edit this file as you like.
     "my-project"
 , dependencies =
     [ "console"
+    , "debug"
     , "effect"
     , "newtype"
     , "psci-support"
@@ -13,6 +14,8 @@ You can edit this file as you like.
     , "quickcheck-laws"
     , "refined"
     , "sized-matrices"
+    , "stringutils"
+    , "test-unit"
     , "vectors"
     ]
 , packages =

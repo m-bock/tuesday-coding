@@ -126,7 +126,7 @@ let overrides = { metadata = upstream.metadata ⫽ { version = "v0.13.4" } }
 let additions =
       { sized-matrices =
           { dependencies =
-              [ "sized-vectors"
+              [ "vectors"
               , "prelude"
               , "foldable-traversable"
               , "maybe"
