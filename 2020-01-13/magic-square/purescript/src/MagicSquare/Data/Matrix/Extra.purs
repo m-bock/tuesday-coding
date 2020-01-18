@@ -17,6 +17,7 @@ import Data.WrapNatural as WrapNatural
 import Partial.Unsafe (unsafeCrashWith, unsafePartial)
 import Type.Proxy (Proxy(..))
 import Unsafe.Coerce (unsafeCoerce)
+import Matrix as MatrixUntyped
 
 lookup ::
   forall s a.
@@ -97,3 +98,11 @@ prettyPrint mat =
               # String.joinWith " "
         )
       # String.joinWith "\n"
+
+toUntyped :: forall h w a. Nat h => Nat w => Matrix h w a -> MatrixUntyped.Matrix a
+toUntyped mat =
+  unsafePartial
+    ( Matrix.toArray mat
+        # MatrixUntyped.fromArray
+        # fromJust
+    )

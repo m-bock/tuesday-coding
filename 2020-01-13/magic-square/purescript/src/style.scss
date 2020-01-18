@@ -1,0 +1,25 @@
+body,
+html {
+  height: 100%;
+  margin: 0px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+body {
+  overflow: auto;
+}
+
+.UI__Main__root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  flex-direction: column;
+
+  .item {
+    margin-bottom: 20px;
+    max-width: 600px;
+    width: 100%;
+  }
+}

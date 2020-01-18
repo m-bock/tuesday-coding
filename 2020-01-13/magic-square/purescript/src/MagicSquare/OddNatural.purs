@@ -1,27 +1,44 @@
-module MagicSquare.OddNatural where
+module MagicSquare.OddNatural (solve, solve_steps, solve_steps', class Odd) where
 
 import Prelude
 import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as ArrayNE
-import Data.Matrix (replicate') as Matrix
-import Data.Matrix.Extra (lookup, set) as Matrix
+import Data.Matrix (Matrix(..), replicate') as Matrix
+import Data.Matrix.Extra (lookup, set, toUntyped) as Matrix
 import Data.Maybe (Maybe(..))
-import Data.Typelevel.Num (class DivMod, class Pos, D0, D1, D2, d1, d3, d5, d7, toInt, toInt')
+import Data.Typelevel.Num (class DivMod, class Pos, D0, D1, D2, d1, d3, d5, d7, reifyIntP, toInt, toInt')
 import Data.Typelevel.Undefined (undefined)
 import Data.Vec (Vec, vec2)
 import Data.WrapNatural (WrapNatural)
 import Data.WrapNatural as WrapNatural
-import Debug.Trace (spy)
 import Effect (Effect)
 import MagicSquare (MagicSquare_Builder)
 import MagicSquare as MagicSquare
 import Test.Unit (TestSuite, suite)
 import Test.Unit.Main (runTest)
 import Type.Proxy (Proxy(..))
+import Unsafe.Coerce (unsafeCoerce)
+import Matrix as MatrixUntyped
 
--- fromOddNatural
 --
+reifyOddPos :: forall r. Int -> (forall n. Pos n => Odd n => n -> r) -> Maybe r
+reifyOddPos i f =
+  if i `mod` 2 == 0 then
+    Nothing
+  else
+    Just (reifyIntP i (relaxOdd' f {}))
+  where
+  relaxOdd' :: forall n. (Odd n => (n -> r)) -> {} -> n -> r
+  relaxOdd' = unsafeCoerce
+
+--
+solve :: forall n. Pos n => Odd n => n -> MagicSquare_Builder n
+solve = solve_steps >>> ArrayNE.head
+
+solve_steps' :: Int -> Maybe (NonEmptyArray (MatrixUntyped.Matrix (Maybe Int)))
+solve_steps' n = reifyOddPos n (solve_steps >>> map Matrix.toUntyped)
+
 solve_steps ::
   forall n.
   Pos n =>
@@ -45,21 +62,25 @@ solve_steps _ =
   go { index, builders }
     | index > (n * n) = builders
 
-  go { builders, position, index } =
+  go { builders, index, position } =
     let
       builder = ArrayNE.last builders
     in
       case next position builder of
-        Just posNext ->
-          go
-            { builders: ArrayNE.snoc builders (Matrix.set posNext (Just index) builder)
-            , position: posNext
-            , index: index + 1
-            }
-        Nothing -> builders
+        Just next_position ->
+          let
+            next_builders =
+              Matrix.set next_position (Just index) builder
+                # ArrayNE.snoc builders
 
-solve :: forall n. Pos n => Odd n => n -> MagicSquare_Builder n
-solve = solve_steps >>> ArrayNE.head
+            next_index = index + 1
+          in
+            go
+              { builders: next_builders
+              , position: next_position
+              , index: next_index
+              }
+        Nothing -> builders
 
 next ::
   forall s.
