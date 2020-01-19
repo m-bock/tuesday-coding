@@ -15,10 +15,10 @@ styles =
   in
     { _root:
       ( \props ->
-          Record.merge props { className: scope <> "root" }
+          Record.union props { className: scope <> "root" }
       )
     , item:
       ( \props ->
-          Record.merge props { className: scope <> "item" }
+          Record.union props { className: scope <> "item" }
       )
     }

@@ -1,20 +1,26 @@
 module UI.View (ui) where
 
 import Prelude
+import BaseUI.AspectRatioBox as BaseUI.AspectRatioBox
+import BaseUI.Card as BaseUI.Card
 import Data.Array.NonEmpty (NonEmptyArray)
+import Data.Array.NonEmpty as ArrayNE
 import Data.Maybe (Maybe(..))
-import React.Basic.DOM as R
 import Matrix (Matrix)
 import React.Basic (Component, JSX, createComponent, element, make)
-import Data.Array.NonEmpty as ArrayNE
-import BaseUI.Card as BaseUI.Card
-import Util (toBasic)
-import BaseUI.AspectRatioBox as BaseUI.AspectRatioBox
-import Util (Patch)
+import React.Basic.DOM as R
 import Record as Record
+import UI.Grid as UI.Grid
+import Util (Patch)
+import Util (toBasic)
 
 ui :: Ui
-ui = mkUi $ mkRender styles
+ui =
+  mkUi
+    $ mkRender
+        { patch
+        , ui_grid: UI.Grid.ui
+        }
 
 -- Control.Types
 -- 
@@ -48,10 +54,15 @@ initialState = {}
 type Styles
   = { square :: Patch ( className :: String ) }
 
+type Options
+  = { patch :: Styles
+    , ui_grid :: { matrix :: Matrix (Maybe Int) } -> JSX
+    }
+
 -- Markup
 --
-mkRender :: Styles -> Render
-mkRender styles props =
+mkRender :: Options -> Render
+mkRender options@{ patch } props =
   toBasic BaseUI.Card.card
     { title: "Magic Square"
     , children:
@@ -60,13 +71,9 @@ mkRender styles props =
             [ toBasic BaseUI.AspectRatioBox.aspectRatioBoxBody
                 { children:
                   [ R.div
-                      $ styles.square
+                      $ patch.square
                           { children:
-                            [ R.pre
-                                { children:
-                                  [ R.text $ show $ ArrayNE.last props.builders
-                                  ]
-                                }
+                            [ options.ui_grid { matrix: ArrayNE.last props.builders }
                             ]
                           }
                   ]
@@ -80,13 +87,13 @@ mkRender styles props =
 --
 foreign import css :: Unit
 
-styles :: Styles
-styles =
+patch :: Styles
+patch =
   let
     scope = "UI__View__"
   in
     { square:
       ( \props ->
-          Record.merge props { className: scope <> "square" }
+          Record.union props { className: scope <> "square" }
       )
     }

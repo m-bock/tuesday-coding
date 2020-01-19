@@ -1,15 +1,17 @@
 module Util where
 
 import Prelude
+import Effect (Effect)
+import Data.String as String
+import Prim.Row (class Union, class Nub)
 import React (ReactClass)
 import React as React
 import React.Basic (JSX, toReactComponent)
 import React.Basic as RB
-import Unsafe.Coerce (unsafeCoerce)
-import Record as Record
-import Prim.Row (class Union, class Nub)
+import React.Basic.DOM (CSS)
 import React.Basic.DOM.Generated (Props_div)
-import Effect (Effect)
+import Record as Record
+import Unsafe.Coerce (unsafeCoerce)
 
 toBasic ::
   forall props.
@@ -30,7 +32,34 @@ toBasicLeaf reactClass props =
     )
 
 type Patch r
-  = forall r1 r2 r3.
-    Nub r2 r3 =>
-    Union r1 r r2 =>
-    { | r1 } -> { | r3 }
+  = forall r1 r2.
+    Union
+      r1
+      r
+      r2 =>
+    { | r1 } -> { | r2 }
+
+type PatchStyle
+  = Patch
+      ( className :: String
+      , style :: CSS
+      )
+
+type Style
+  = { css :: CSS
+    , classNames :: Array String
+    }
+
+style_toProps :: Style -> { style :: CSS, className :: String }
+style_toProps style =
+  { style: style.css
+  , className: String.joinWith " " style.classNames
+  }
+
+patchStyle :: forall r. Style -> { | r } -> { style :: CSS, className :: String | r }
+patchStyle style r =
+  Record.union
+    { style: style.css
+    , className: String.joinWith " " style.classNames
+    }
+    r
