@@ -1,0 +1,15 @@
+.UI__Main__ {
+  &root {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    flex-direction: column;
+  }
+
+  &item {
+    margin-bottom: 20px;
+    max-width: 600px;
+    width: 100%;
+  }
+}

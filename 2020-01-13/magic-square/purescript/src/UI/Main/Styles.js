@@ -1,0 +1,1 @@
+exports.css = require("~/src/UI/Main/styles.scss")

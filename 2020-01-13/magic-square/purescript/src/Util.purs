@@ -9,6 +9,7 @@ import Unsafe.Coerce (unsafeCoerce)
 import Record as Record
 import Prim.Row (class Union, class Nub)
 import React.Basic.DOM.Generated (Props_div)
+import Effect (Effect)
 
 toBasic ::
   forall props.

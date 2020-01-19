@@ -1,4 +1,4 @@
-module UI.Edit where
+module UI.Edit (ui) where
 
 import Prelude
 import BaseUI.Slider.Marks as Slider.Marks
@@ -30,6 +30,11 @@ import Util (toBasic, toBasicLeaf)
 import BaseUI.Card as BaseUI.Card
 import BaseUI.Button as BaseUI.Button
 
+ui :: Props -> JSX
+ui = mkUi render
+
+-- Control.Types
+--
 type Props
   = { builders ::
       { value :: Maybe (NonEmptyArray (Matrix (Maybe Int)))
@@ -44,6 +49,11 @@ data Action
   = Submit
   | SetSize Int
 
+type Render
+  = (Action -> Effect Unit) -> State -> Props -> JSX
+
+-- Control
+--
 action :: _ -> Action -> Effect Unit
 action self action = case action of
   Submit ->
@@ -52,25 +62,30 @@ action self action = case action of
       (MagicSquare.OddNatural.solve_steps' self.state.size)
   SetSize n -> self.setState _ { size = n }
 
-ui :: Props -> JSX
-ui = make (createComponent "Edit") { initialState, render }
-  where
-  initialState :: State
-  initialState = { size: 5 }
+initialState :: State
+initialState = { size: 5 }
 
-  sliderInt :: ReactClass (BaseUI.Slider.Slider_Props Int)
-  sliderInt = BaseUI.Slider.slider
+mkUi :: Render -> Props -> JSX
+mkUi render =
+  make (createComponent "Edit")
+    { initialState
+    , render: \self -> render (action self) self.state self.props
+    }
 
-  marks start =
-    Slider.Marks.create
-      { min: 1
-      , start
-      , end: Nothing
-      , max: 30 + 1
-      , step: 2
-      }
-
-  render self =
+-- Markup
+--
+render :: Render
+render action state props =
+  let
+    marks start =
+      Slider.Marks.create
+        { min: 1
+        , start
+        , end: Nothing
+        , max: 30 + 1
+        , step: 2
+        }
+  in
     toBasic BaseUI.Card.card
       { title: "Odd Natural"
       , children:
@@ -78,14 +93,14 @@ ui = make (createComponent "Edit") { initialState, render }
             { children:
               [ toBasicLeaf sliderInt
                   ( BaseUI.Slider.slider_defaultProps
-                      { marks = unsafePartial (fromJust $ marks self.state.size)
-                      , onChange = \{ start } -> action self $ SetSize start
+                      { marks = unsafePartial (fromJust $ marks state.size)
+                      , onChange = \{ start } -> action $ SetSize start
                       }
                   )
               , toBasic BaseUI.Card.styledAction
                   { children:
                     [ toBasic BaseUI.Button.button
-                        { onClick: action self Submit
+                        { onClick: action Submit
                         , children:
                           [ R.text "OK"
                           ]
@@ -96,3 +111,6 @@ ui = make (createComponent "Edit") { initialState, render }
             }
         ]
       }
+
+sliderInt :: ReactClass (BaseUI.Slider.Slider_Props Int)
+sliderInt = BaseUI.Slider.slider
