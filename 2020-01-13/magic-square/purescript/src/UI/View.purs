@@ -4,23 +4,29 @@ import Prelude
 import BaseUI.AspectRatioBox as BaseUI.AspectRatioBox
 import BaseUI.Card as BaseUI.Card
 import Data.Array.NonEmpty (NonEmptyArray)
-import Data.Array.NonEmpty as ArrayNE
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe, maybe)
 import Matrix (Matrix)
-import React.Basic (Component, JSX, createComponent, element, make)
-import React.Basic.DOM as R
+import React.Basic (JSX, createComponent, make)
 import Record as Record
+import UI.Anim as UI.Anim
 import UI.Grid as UI.Grid
-import Util (Patch)
+import Util (Patch, node)
 import Util (toBasic)
 
 ui :: Ui
-ui =
-  mkUi
-    $ mkRender
-        { patch
-        , ui_grid: UI.Grid.ui
-        }
+ui = mkUi $ mkRender options
+
+options :: Options
+options =
+  { styles
+  , ui_builders:
+    UI.Anim.mkUi
+      { ui_item:
+        \{ item } -> UI.Grid.ui { matrix: item }
+      , interval: 500
+      }
+  , copy
+  }
 
 -- Control.Types
 -- 
@@ -51,40 +57,44 @@ initialState = {}
 
 -- Markup.Types
 --
-type Styles
-  = { square :: Patch ( className :: String ) }
-
 type Options
-  = { patch :: Styles
-    , ui_grid :: { matrix :: Matrix (Maybe Int) } -> JSX
+  = { styles :: Styles
+    , ui_builders :: { builders :: NonEmptyArray (Matrix (Maybe Int)) } -> JSX
+    , copy :: Copy
+    }
+
+type Styles
+  = { square :: Patch ( className :: String )
+    , box :: Patch ( width :: String )
+    }
+
+type Copy
+  = { title :: String
     }
 
 -- Markup
---
 mkRender :: Options -> Render
-mkRender options@{ patch } props =
-  toBasic BaseUI.Card.card
-    { title: "Magic Square"
-    , children:
-      [ toBasic BaseUI.AspectRatioBox.aspectRatioBox
-          { width: "100%"
-          , children:
-            [ toBasic BaseUI.AspectRatioBox.aspectRatioBoxBody
-                { children:
-                  [ options.ui_grid { matrix: ArrayNE.last props.builders }
-                  ]
+mkRender opts props =
+  node (BaseUI.Card.card # toBasic)
+    { title: opts.copy.title
+    }
+    [ node (BaseUI.AspectRatioBox.aspectRatioBox # toBasic)
+        (opts.styles.box {})
+        [ node (BaseUI.AspectRatioBox.aspectRatioBoxBody # toBasic)
+            {}
+            [ opts.ui_builders
+                { builders: props.builders
                 }
             ]
-          }
-      ]
-    }
+        ]
+    ]
 
 -- Styles
 --
 foreign import css :: Unit
 
-patch :: Styles
-patch =
+styles :: Styles
+styles =
   let
     scope = "UI__View__"
   in
@@ -92,4 +102,13 @@ patch =
       ( \props ->
           Record.union props { className: scope <> "square" }
       )
+    , box:
+      ( \props ->
+          Record.union props { width: "100%" }
+      )
     }
+
+-- Copy
+--
+copy :: Copy
+copy = { title: "Magic Square" }

@@ -2,20 +2,13 @@ module UI.Main.Markup where
 
 import Prelude
 import BaseUI as BaseUI
-import Data.Array.NonEmpty (NonEmptyArray)
-import Data.Maybe (Maybe(..), maybe)
+import Data.Maybe (maybe)
 import Effect (Effect)
-import Matrix (Matrix)
-import React.Basic (Component, JSX, createComponent, element, make)
+import React.Basic (JSX)
 import React.Basic.DOM as R
 import UI.Edit as UI.Edit
 import UI.View as UI.View
-import Util (toBasic, Patch)
-import React.Basic.DOM.Internal (CSS, css)
-import Data.Maybe (fromMaybe)
-import Record as Record
-import Prim.Row (class Union, class Nub)
-import React.Basic.DOM.Generated (Props_div)
+import Util (toBasic)
 import UI.Main.Markup.Types (Styles)
 import UI.Main.Control.Types (Action(..), State, Props)
 

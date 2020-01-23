@@ -1,10 +1,8 @@
 module UI.Main.Styles where
 
 import Prelude
-import Debug.Trace (spy)
 import Record as Record
 import UI.Main.Markup.Types (Styles)
-import Effect.Unsafe (unsafePerformEffect)
 
 foreign import css :: Unit
 

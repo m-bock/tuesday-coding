@@ -6,24 +6,24 @@ html {
   box-sizing: border-box;
 }
 
+html {
+  overflow: hidden;
+}
+
 body {
   overflow: auto;
 }
 
 .UI__Grid__ {
-  &cell {
-    overflow: hidden;
-    position: relative;
-  }
+}
 
-  &card {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    span {
-      height: 100%;
-    }
+@keyframes cell {
+  from {
+    //transform: rotate3d(1, 1, 0, 180deg);
+    transform: translate(1000px, 1000px);
+  }
+  to {
+    //transform: rotate3d(1, 1, 0, 360deg);
+    transform: translate(0%, 0%);
   }
 }

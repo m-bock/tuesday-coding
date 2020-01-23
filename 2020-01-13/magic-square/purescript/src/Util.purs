@@ -63,3 +63,9 @@ patchStyle style r =
     , className: String.joinWith " " style.classNames
     }
     r
+
+node ::
+  forall b a r1 r2.
+  Union r2 ( children :: b ) r1 =>
+  (Record r1 -> a) -> Record r2 -> b -> a
+node ui props children = ui $ Record.union props { children }
