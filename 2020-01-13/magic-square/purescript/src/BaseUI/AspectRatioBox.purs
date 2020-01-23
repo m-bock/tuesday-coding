@@ -11,8 +11,11 @@ import Effect (Effect)
 foreign import aspectRatioBox ::
   ReactClass
     { children :: React.Children
+    , width :: String
     }
 
--- AspectRatioBox
+-- AspectRatioBoxBody
 --
-foreign import aspectRatioBoxBody :: ReactClass { children :: React.Children }
+foreign import aspectRatioBoxBody ::
+  ReactClass
+    { children :: React.Children }

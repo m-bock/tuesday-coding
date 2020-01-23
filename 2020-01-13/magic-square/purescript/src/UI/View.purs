@@ -67,15 +67,11 @@ mkRender options@{ patch } props =
     { title: "Magic Square"
     , children:
       [ toBasic BaseUI.AspectRatioBox.aspectRatioBox
-          { children:
+          { width: "100%"
+          , children:
             [ toBasic BaseUI.AspectRatioBox.aspectRatioBoxBody
                 { children:
-                  [ R.div
-                      $ patch.square
-                          { children:
-                            [ options.ui_grid { matrix: ArrayNE.last props.builders }
-                            ]
-                          }
+                  [ options.ui_grid { matrix: ArrayNE.last props.builders }
                   ]
                 }
             ]

@@ -9,3 +9,21 @@ html {
 body {
   overflow: auto;
 }
+
+.UI__Grid__ {
+  &cell {
+    overflow: hidden;
+    position: relative;
+  }
+
+  &card {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    span {
+      height: 100%;
+    }
+  }
+}

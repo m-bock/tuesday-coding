@@ -1,92 +1,139 @@
-module UI.Grid (ui, UI, Props) where
+module UI.Grid (ui, Props) where
 
 import Prelude
+import Data.Argonaut (toArray)
 import Data.Maybe (Maybe, maybe)
+import Data.Typelevel.Num as N
+import Data.Vec (Vec, vec2)
+import Data.Vec as Vec
+import FitText (fitText)
 import Matrix (Matrix)
-import Matrix.Extra (getRows) as Matrix
-import Prim.Row (class Union)
+import Matrix as Matrix
+import Partial.Unsafe (unsafeCrashWith)
 import React.Basic (JSX)
-import React.Basic.DOM (CSS, Props_table)
+import React.Basic.DOM (CSS, css)
 import React.Basic.DOM as DOM
 import Record as Record
 import Style.Debug (debugStyle)
-import Unsafe.Coerce (unsafeCoerce)
-import Util (PatchStyle, Style, Patch, patchStyle, style_toProps)
-
-type UI
-  = Props -> JSX
+import Util (Patch, PatchStyle, style_toProps, toBasic)
+import Web.DOM.ParentNode (children)
+import Web.HTML.HTMLProgressElement (position)
 
 type Props
   = { matrix :: Matrix (Maybe Int) }
 
-ui :: UI
-ui = mk_ui { patch }
+ui :: Props -> JSX
+ui = mkUi env
 
--- Markup.Types
+env :: Env
+env =
+  { patch
+  }
+
+-- Markup.Type
 --
-type Options
-  = { patch :: Patches }
+type Env
+  = { patch :: Patches
+    }
 
 type Patches
-  = { table :: PatchStyle
-    , row :: PatchStyle
-    , cell :: PatchStyle
+  = { root :: PatchStyle
+    , cell ::
+      { size :: Vec N.D2 Int
+      , position :: Vec N.D2 Int
+      } ->
+      PatchStyle
     , card :: PatchStyle
     }
 
--- Markup 
---
-mk_ui :: Options -> UI
-mk_ui { patch } props = renderTable
+-- Markup
+mkUi :: Env -> Props -> JSX
+mkUi env props =
+  DOM.div
+    $ env.patch.root
+        { children:
+          matrix_toArray props.matrix
+            <#> ( \{ position, value } ->
+                  DOM.div
+                    $ env.patch.cell
+                        { position
+                        , size: matrix_getSize props.matrix
+                        }
+                        { children:
+                          [ toBasic fitText
+                              { compressor: 0.3
+                              , children:
+                                [ DOM.div
+                                    $ env.patch.card
+                                        { children:
+                                          [ maybe "" show value # DOM.text ]
+                                        }
+                                ]
+                              }
+                          ]
+                        }
+              )
+        }
   where
-  renderTable =
-    DOM.table
-      $ patch.table
-          { children:
-            [ DOM.tbody
-                { children: renderRow <$> Matrix.getRows props.matrix
-                }
-            ]
-          }
+  matrix_getSize mat = vec2 (Matrix.width mat) (Matrix.height mat)
 
-  renderRow row =
-    DOM.tr
-      $ patch.row
-          { children:
-            row
-              <#> renderCell
-          }
-
-  renderCell cell =
-    DOM.td
-      $ patch.cell
-          { children: maybe [] (pure <<< renderCard) cell }
-
-  renderCard (n :: Int) =
-    DOM.div
-      $ patch.card
-          { children:
-            [ DOM.text $ show n
-            ]
-          }
+  matrix_toArray mat =
+    Matrix.toIndexedArray mat
+      <#> (\{ x, y, value } -> { position: vec2 x y, value })
 
 -- Styles
 -- 
 patch :: Patches
 patch =
-  { table: foo
-  , row: foo
-  , cell: foo
-  , card: foo
-  }
-
-foo ::
-  forall r1 r2.
-  Union
-    r1
-    ( className :: String
-    , style :: CSS
-    )
-    r2 =>
-  { | r1 } -> { | r2 }
-foo props = Record.union props (style_toProps debugStyle)
+  let
+    scope = "UI__Grid__"
+  in
+    { root:
+      ( \props ->
+          Record.union props
+            ( { classNames: [ scope <> "table" ]
+              , css:
+                css
+                  { position: "relative"
+                  , width: "100%"
+                  , height: "100%"
+                  , borderRight: "1px solid black"
+                  , borderBottom: "1px solid black"
+                  }
+              }
+                # style_toProps
+            )
+      )
+    , cell:
+      ( \{ position, size } props ->
+          Record.union props
+            ( { classNames: []
+              , css:
+                css
+                  { position: "absolute"
+                  , left: "calc(" <> show (position Vec.!! N.d0) <> "*(100%/" <> show (size Vec.!! N.d0) <> "))"
+                  , top: "calc(" <> show (position Vec.!! N.d1) <> "*(100%/" <> show (size Vec.!! N.d1) <> "))"
+                  , width: "calc(100%/" <> show (size Vec.!! N.d0) <> ")"
+                  , height: "calc(100%/" <> show (size Vec.!! N.d1) <> ")"
+                  , borderLeft: "1px solid black"
+                  , borderTop: "1px solid black"
+                  }
+              }
+                # style_toProps
+            )
+      )
+    , card:
+      ( \props ->
+          Record.union props
+            ( { classNames: [ scope <> "card" ]
+              , css:
+                css
+                  { display: "flex"
+                  , alignItems: "center"
+                  , justifyContent: "center"
+                  }
+              }
+                # style_toProps
+            )
+      )
+    }

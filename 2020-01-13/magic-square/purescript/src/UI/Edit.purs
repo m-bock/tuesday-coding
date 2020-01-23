@@ -4,28 +4,15 @@ import Prelude
 import BaseUI.Slider.Marks as Slider.Marks
 import BaseUI.Slider as BaseUI.Slider
 import Data.Array.NonEmpty (NonEmptyArray)
-import Data.Matrix.Extra as Matrix
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Maybe (maybe)
-import Data.Typelevel.Num (class Pos, class Succ, d1, d5, reifyInt, reifyIntP)
-import Data.Typelevel.Num as N
-import Data.Typelevel.Num.Ops (succ, class SuccP)
-import Data.Typelevel.Num.Reps (type (:*))
-import Data.Typelevel.Undefined (undefined)
 import Effect (Effect)
-import Effect.Console (log)
-import MagicSquare.OddNatural (class Odd)
 import MagicSquare.OddNatural as MagicSquare.OddNatural
 import Matrix (Matrix)
-import Partial.Unsafe (unsafeCrashWith, unsafePartial)
+import Partial.Unsafe (unsafePartial)
 import React (ReactClass)
-import React as React
-import React.Basic (Component, JSX, createComponent, element, make)
-import React.Basic as RB
+import React.Basic (JSX, createComponent, make)
 import React.Basic.DOM as R
-import React.Basic.DOM.Events (capture_)
-import React.DOM as DOM
-import Unsafe.Coerce (unsafeCoerce)
 import Util (toBasic, toBasicLeaf)
 import BaseUI.Card as BaseUI.Card
 import BaseUI.Button as BaseUI.Button
@@ -82,7 +69,7 @@ render action state props =
         { min: 1
         , start
         , end: Nothing
-        , max: 30 + 1
+        , max: 20 + 1
         , step: 2
         }
   in
